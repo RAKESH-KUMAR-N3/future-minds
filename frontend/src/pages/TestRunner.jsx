@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, ChevronRight, Trophy, RotateCcw, Home } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, Trophy, RotateCcw, Home, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const TestRunner = () => {
@@ -15,6 +15,8 @@ const TestRunner = () => {
     const [showResult, setShowResult] = useState(false);
     const [showExplanation, setShowExplanation] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [doubtSent, setDoubtSent] = useState(null); // { questionIndex: true }
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!test) navigate('/all-tests');
@@ -77,6 +79,30 @@ const TestRunner = () => {
         } catch (err) {
             console.error('Failed to save result:', err);
         }
+    };
+
+    const handleAskDoubt = async () => {
+        if (!question) return;
+        setIsSubmitting(true);
+        try {
+            const r = await fetch(`${import.meta.env.VITE_API_URL}/doubts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    subject: `Review: ${test.title}`,
+                    question: `I have a doubt about Q${currentQ + 1}: ${question.questionText}. (Test: ${test.title})`
+                })
+            });
+            if (r.ok) {
+                setDoubtSent({ ...doubtSent, [currentQ]: true });
+            }
+        } catch (err) {
+            console.error('Failed to send doubt:', err);
+        }
+        setIsSubmitting(false);
     };
 
     const score = answers.filter(a => a.selected === a.correct).length;
@@ -209,8 +235,23 @@ const TestRunner = () => {
 
                     {/* Explanation */}
                     {showExplanation && question.explanation && (
-                        <div style={{ marginTop: '24px', padding: '20px 24px', background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '16px' }}>
-                            <p style={{ fontSize: '0.7rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '8px' }}>💡 Explanation</p>
+                        <div style={{ marginTop: '24px', padding: '20px 24px', background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '16px', position: 'relative' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                <p style={{ fontSize: '0.7rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>💡 Explanation</p>
+                                {doubtSent?.[currentQ] ? (
+                                    <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#16a34a', background: '#f0fdf4', padding: '4px 8px', borderRadius: '6px' }}>✓ Doubt Sent</span>
+                                ) : (
+                                    <button 
+                                        disabled={isSubmitting}
+                                        onClick={handleAskDoubt}
+                                        style={{ background: 'white', border: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.65rem', fontWeight: '900', padding: '4px 10px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textTransform: 'uppercase', transition: 'all 0.2s' }}
+                                        onMouseEnter={e => { e.currentTarget.style.borderColor = color; e.currentTarget.style.color = color; }}
+                                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#64748b'; }}
+                                    >
+                                        <Zap size={12} fill={color} color={color} /> {isSubmitting ? 'Sending...' : 'Ask Doubt'}
+                                    </button>
+                                )}
+                            </div>
                             <p style={{ color: '#334155', fontWeight: '500', lineHeight: '1.6' }}>{question.explanation}</p>
                         </div>
                     )}
