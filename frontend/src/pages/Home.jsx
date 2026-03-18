@@ -29,7 +29,7 @@ const Home = () => {
       {/* ════════════════════════════════════════
           HERO
       ════════════════════════════════════════ */}
-      <section style={{ position: 'relative', paddingTop: '140px', paddingBottom: '100px', paddingLeft: '40px', paddingRight: '40px', overflow: 'hidden' }}>
+      <section style={{ position: 'relative', paddingTop: '100px', paddingBottom: '100px', paddingLeft: '10px', paddingRight: '10px', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '600px', height: '600px', background: 'radial-gradient(circle, #dcfce7 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '500px', height: '500px', background: 'radial-gradient(circle, #fce7f3 0%, transparent 70%)', pointerEvents: 'none' }} />
 

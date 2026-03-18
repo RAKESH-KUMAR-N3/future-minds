@@ -23,16 +23,6 @@ const TestRunner = () => {
     if (!test) return null;
 
     const questions = test.questions || [];
-    if (questions.length === 0) {
-        return (
-            <div style={{ minHeight: '100vh', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
-                <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2rem', color: '#0f172a', marginBottom: '16px' }}>Oops! No questions yet.</h2>
-                <p style={{ color: '#64748b', marginBottom: '32px' }}>This test doesn't have any questions added to it.</p>
-                <button onClick={() => navigate('/dashboard')} style={{ background: '#39B54A', color: 'white', border: 'none', borderRadius: '12px', padding: '14px 28px', fontFamily: 'Outfit, sans-serif', fontWeight: '900', cursor: 'pointer' }}>Go Back</button>
-            </div>
-        );
-    }
-
     const question = questions[currentQ];
     const totalQ = questions.length;
     const progress = (currentQ / totalQ) * 100;
