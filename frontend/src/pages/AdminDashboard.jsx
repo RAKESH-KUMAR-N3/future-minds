@@ -2,11 +2,30 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
-  UserPlus, Users, LayoutDashboard, LogOut,
-  ClipboardCheck, Trophy, BarChart2, Trash2, Key,
-  FlaskConical, Plus, X, ChevronDown, ChevronUp,
-  CheckCircle, Save, ArrowLeft, Bell, Search, Home as HomeIcon, LayoutPanelLeft, Menu
-  CheckCircle, Save, ArrowLeft, Eye, EyeOff
+  UserPlus,
+  Users,
+  LayoutDashboard,
+  LogOut,
+  ClipboardCheck,
+  Trophy,
+  BarChart2,
+  Trash2,
+  Key,
+  FlaskConical,
+  Plus,
+  X,
+  ChevronDown,
+  ChevronUp,
+  CheckCircle,
+  Save,
+  ArrowLeft,
+  Bell,
+  Search,
+  Home as HomeIcon,
+  LayoutPanelLeft,
+  Menu,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import logo from '../assets/future-minds logo.png';
 
