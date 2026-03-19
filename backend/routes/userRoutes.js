@@ -16,7 +16,7 @@ router.post('/', verifyToken, isAdmin, async (req, res) => {
   try {
     const { username, password, role, name } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashedPassword, role, name: name || username });
+    const user = new User({ username, password: hashedPassword, passcode: password, role, name: name || username });
     await user.save();
     res.status(201).json({ success: true, user: { id: user._id, username: user.username, role: user.role, name: user.name } });
   } catch (err) {
@@ -50,7 +50,7 @@ router.put('/:id/reset-password', verifyToken, isAdmin, async (req, res) => {
     const { password } = req.body;
     if (!password) return res.status(400).json({ success: false, message: 'Password is required' });
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.findByIdAndUpdate(req.params.id, { password: hashedPassword });
+    await User.findByIdAndUpdate(req.params.id, { password: hashedPassword, passcode: password });
     res.json({ success: true, message: 'Passcode updated successfully' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
