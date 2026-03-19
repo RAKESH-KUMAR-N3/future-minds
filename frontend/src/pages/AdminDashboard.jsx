@@ -6,6 +6,7 @@ import {
   ClipboardCheck, Trophy, BarChart2, Trash2, Key,
   FlaskConical, Plus, X, ChevronDown, ChevronUp,
   CheckCircle, Save, ArrowLeft, Bell, Search, Home as HomeIcon, LayoutPanelLeft, Menu
+  CheckCircle, Save, ArrowLeft, Eye, EyeOff
 } from 'lucide-react';
 import logo from '../assets/future-minds logo.png';
 
@@ -34,6 +35,11 @@ const AdminDashboard = () => {
   /* Create student */
   const [formData, setFormData] = useState({ username: '', password: '', role: 'sub-junior' });
   const [formMsg, setFormMsg] = useState('');
+
+  const [showStudentForm, setShowStudentForm] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [visiblePasswords, setVisiblePasswords] = useState({});
+  const togglePassword = (id) => setVisiblePasswords(prev => ({ ...prev, [id]: !prev[id] }));
 
   /* Create test */
   const [testForm, setTestForm] = useState({ title: '', role: 'sub-junior', type: 'mock', category: '', duration: 15 });
@@ -573,26 +579,215 @@ const AdminDashboard = () => {
     </div>
   );
 
-  const renderStudents = () => (
-    <div style={card}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
-        <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a' }}>Student Roster</h3>
-        <span style={{ background: '#f8fafc', border: '1px solid #f1f5f9', padding: '6px 16px', borderRadius: '99px', fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{allUsers.filter(u => u.role !== 'admin').length} Students</span>
+  const renderStudentProfile = () => {
+    if (!selectedStudent) return null;
+    const studentResults = results.filter(r => r.username === selectedStudent.username).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const totalTests = studentResults.length;
+    const avgScore = totalTests > 0 ? Math.round(studentResults.reduce((sum, r) => sum + r.percentage, 0) / totalTests) : 0;
+    const distinctions = studentResults.filter(r => r.percentage >= 75).length;
+    const needsReview = studentResults.filter(r => r.percentage < 40).length;
+
+    // Subject breakdown
+    const subjectStats = {};
+    studentResults.forEach(r => {
+      // Find category from tests list based on testTitle
+      const testObj = tests.find(t => t.title === r.testTitle);
+      const category = testObj ? testObj.category : 'General';
+      if (!subjectStats[category]) subjectStats[category] = { sum: 0, count: 0 };
+      subjectStats[category].sum += r.percentage;
+      subjectStats[category].count += 1;
+    });
+    const subjects = Object.entries(subjectStats).map(([cat, s]) => ({ category: cat, avg: Math.round(s.sum / s.count) }));
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* Header with Back Button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '10px' }}>
+          <button onClick={() => setSelectedStudent(null)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '10px 18px', cursor: 'pointer', fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#64748b', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}>
+            <ArrowLeft size={15} /> Back to Roster
+          </button>
+        </div>
+
+        {/* Identity Panel */}
+        <div style={{ ...card, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '30px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div style={{ width: '64px', height: '64px', background: '#eff6ff', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users size={32} color="#3b82f6" />
+            </div>
+            <div>
+              <h2 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.8rem', color: '#0f172a', margin: 0, lineHeight: 1 }}>{selectedStudent.name || selectedStudent.username}</h2>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '6px' }}>@{selectedStudent.username}</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '30px', textAlign: 'right' }}>
+            <div>
+              <p style={{ fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>Password</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
+                <p style={{ fontFamily: 'monospace', fontWeight: '700', fontSize: '1rem', color: '#0f172a' }}>
+                  {selectedStudent.passcode ? (visiblePasswords[selectedStudent._id] ? selectedStudent.passcode : '••••••••') : '********'}
+                </p>
+                {selectedStudent.passcode && (
+                  <button onClick={() => togglePassword(selectedStudent._id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0', display: 'flex' }}>
+                    {visiblePasswords[selectedStudent._id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                )}
+              </div>
+            </div>
+            <div>
+              <p style={{ fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>Category</p>
+              {roleBadge(selectedStudent.role)}
+            </div>
+            <div>
+              <p style={{ fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>Enrolled</p>
+              <p style={{ fontWeight: '700', fontSize: '0.9rem', color: '#0f172a' }}>{selectedStudent.createdAt ? new Date(selectedStudent.createdAt).toLocaleDateString() : '—'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Key Metrics */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+          {[
+            { label: 'Practice Tests', value: totalTests, color: '#3b82f6', bg: '#eff6ff', icon: <ClipboardCheck size={20} color="#3b82f6" /> },
+            { label: 'Overall Average', value: totalTests > 0 ? `${avgScore}%` : '—', color: '#39B54A', bg: '#f0fdf4', icon: <BarChart2 size={20} color="#39B54A" /> },
+            { label: 'Distinctions (>75%)', value: distinctions, color: '#8b5cf6', bg: '#f5f3ff', icon: <Trophy size={20} color="#8b5cf6" /> },
+            { label: 'Needs Review (<40%)', value: needsReview, color: '#ef4444', bg: '#fef2f2', icon: <CheckCircle size={20} color="#ef4444" /> },
+          ].map((m, i) => (
+            <div key={i} style={{ ...card, padding: '20px', display: 'flex', gap: '14px', alignItems: 'center' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: m.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{m.icon}</div>
+              <div>
+                <p style={{ fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>{m.label}</p>
+                <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.4rem', color: '#0f172a', lineHeight: 1 }}>{m.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px' }}>
+          {/* Subject Breakdown */}
+          <div style={{ ...card, padding: '24px' }}>
+            <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.1rem', color: '#0f172a', marginBottom: '20px' }}>Subject Mastery 🧠</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {subjects.map((sub, i) => (
+                <div key={i}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>{sub.category}</span>
+                    <span style={{ fontSize: '0.8rem', fontWeight: '900', color: sub.avg >= 75 ? '#39B54A' : sub.avg >= 40 ? '#f97316' : '#ef4444' }}>{sub.avg}%</span>
+                  </div>
+                  <div style={{ height: '8px', background: '#f1f5f9', borderRadius: '99px', overflow: 'hidden' }}>
+                    <div style={{ width: `${sub.avg}%`, height: '100%', background: sub.avg >= 75 ? '#39B54A' : sub.avg >= 40 ? '#f97316' : '#ef4444', borderRadius: '99px', transition: 'width 1s' }} />
+                  </div>
+                </div>
+              ))}
+              {subjects.length === 0 && <p style={{ fontSize: '0.8rem', color: '#94a3b8', textAlign: 'center' }}>No subject data yet.</p>}
+            </div>
+          </div>
+
+          {/* Test History */}
+          <div style={{ ...card, padding: '24px' }}>
+            <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.1rem', color: '#0f172a', marginBottom: '20px' }}>Complete History</h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Test Target', 'Score', 'Percentage', 'Time', 'Date'].map(h => <th key={h} style={{ textAlign: 'left', padding: '10px 12px', fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
+                <tbody>
+                  {studentResults.map((r, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid #f8fafc' }}>
+                      <td style={{ padding: '12px', color: '#0f172a', fontWeight: '700', fontSize: '0.9rem' }}>{r.testTitle}</td>
+                      <td style={{ padding: '12px', color: '#64748b', fontSize: '0.85rem', fontWeight: '700' }}>{r.score}/{r.total}</td>
+                      <td style={{ padding: '12px' }}>
+                        <span style={{ background: r.percentage >= 75 ? '#f0fdf4' : r.percentage >= 40 ? '#fff7ed' : '#fef2f2', color: r.percentage >= 75 ? '#16a34a' : r.percentage >= 40 ? '#f97316' : '#ef4444', padding: '4px 10px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: '900' }}>{r.percentage}%</span>
+                      </td>
+                      <td style={{ padding: '12px', color: '#94a3b8', fontSize: '0.8rem' }}>{Math.floor((r.timeTaken||0)/60)}m {(r.timeTaken||0)%60}s</td>
+                      <td style={{ padding: '12px', color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(r.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                  {studentResults.length === 0 && <tr><td colSpan="5" style={{ padding: '30px', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>No assessments submitted yet.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
+    );
+  };
+
+  const renderStudents = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button onClick={() => setShowStudentForm(v => !v)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#39B54A', color: 'white', border: 'none', borderRadius: '14px', padding: '13px 24px', fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', boxShadow: '0 6px 20px rgba(57,181,74,0.25)', transition: 'all 0.2s' }}>
+          {showStudentForm ? <X size={16} /> : <Plus size={16} />}{showStudentForm ? 'Cancel' : 'New Student'}
+        </button>
+      </div>
+
+      {showStudentForm && (
+        <div style={card}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><UserPlus size={20} color="#3b82f6" /></div>
+            <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.2rem', color: '#0f172a' }}>Create New Student</h3>
+          </div>
+          <form onSubmit={handleCreateStudent} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Username</label>
+              <input type="text" placeholder="e.g. john_doe" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} required style={inputStyle} onFocus={focusStyle} onBlur={blurStyle} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Password</label>
+              <input type="password" placeholder="e.g. secret123" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} required style={inputStyle} onFocus={focusStyle} onBlur={blurStyle} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Role</label>
+              <select value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} style={{ ...inputStyle, cursor: 'pointer' }}>
+                <option value="sub-junior">Sub-Junior (6–9)</option>
+                <option value="junior">Junior (10–12)</option>
+                <option value="senior">Senior (13–15)</option>
+              </select>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'flex-end' }}>
+              <button type="submit" style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: '14px', padding: '14px 28px', fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.2s' }}>Create Student</button>
+            </div>
+          </form>
+          {formMsg && <div style={{ marginTop: '14px', padding: '12px 18px', borderRadius: '12px', background: formMsg.startsWith('✅') ? '#f0fdf4' : '#fef2f2', color: formMsg.startsWith('✅') ? '#16a34a' : '#ef4444', fontWeight: '700', fontSize: '0.88rem' }}>{formMsg}</div>}
+        </div>
+      )}
+
+      <div style={card}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
+          <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a' }}>Student Roster</h3>
+          <span style={{ background: '#f8fafc', border: '1px solid #f1f5f9', padding: '6px 16px', borderRadius: '99px', fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{allUsers.filter(u => u.role !== 'admin').length} Students</span>
+        </div>
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Name', 'Username', 'Category', 'Joined', 'Action'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 16px', fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
+          <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Name', 'Username', 'Password', 'Category', 'Joined', 'Action'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 16px', fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
           <tbody>
             {allUsers.filter(u => u.role !== 'admin').map((u, i) => (
               <tr key={i} style={{ borderBottom: '1px solid #f8fafc', transition: 'background 0.15s' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <td style={{ padding: '16px', fontWeight: '700', color: '#0f172a' }}>{u.name || u.username}</td>
                 <td style={{ padding: '16px', color: '#64748b', fontSize: '0.9rem' }}>{u.username}</td>
+                <td style={{ padding: '16px', color: '#0f172a', fontSize: '0.9rem', fontWeight: '600', fontFamily: 'monospace' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {u.passcode ? (visiblePasswords[u._id] ? u.passcode : '••••••••') : <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }}>********</span>}
+                    {u.passcode && (
+                      <button onClick={() => togglePassword(u._id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0', display: 'flex' }} title="Toggle Password">
+                        {visiblePasswords[u._id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    )}
+                  </div>
+                </td>
                 <td style={{ padding: '16px' }}>{roleBadge(u.role)}</td>
                 <td style={{ padding: '16px', color: '#94a3b8', fontSize: '0.82rem' }}>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
                 <td style={{ padding: '16px' }}>
-                  <button onClick={() => handleDeleteStudent(u._id, u.name || u.username)} style={{ background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}>
-                    <Trash2 size={14} /> Delete
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => setSelectedStudent(u)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#eff6ff', color: '#3b82f6', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#3b82f6'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#3b82f6'; }}>
+                      <Eye size={14} /> Profile
+                    </button>
+                    <button onClick={() => handleResetPassword(u._id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }} onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#64748b'; }}>
+                      <Key size={14} /> Password
+                    </button>
+                    <button onClick={() => handleDeleteUser(u._id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}>
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -600,6 +795,7 @@ const AdminDashboard = () => {
         </table>
         {allUsers.filter(u => u.role !== 'admin').length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '40px', fontSize: '0.9rem' }}>No students enrolled yet.</p>}
       </div>
+    </div>
     </div>
   );
 
@@ -876,6 +1072,11 @@ const AdminDashboard = () => {
           {sidebarBtn(activeTab === 'results' && !editingTest, () => { closeEditor(); setActiveTab('results'); setShowMobileSidebar(false); }, <BarChart2 size={17} />, 'Results')}
           {sidebarBtn(activeTab === 'tests' || !!editingTest, () => { closeEditor(); setActiveTab('tests'); setShowMobileSidebar(false); }, <FlaskConical size={17} />, 'Manage Tests')}
           {sidebarBtn(activeTab === 'doubts' && !editingTest, () => { closeEditor(); setActiveTab('doubts'); setShowMobileSidebar(false); }, <ClipboardCheck size={17} />, 'Doubts')}
+          {sidebarBtn(activeTab === 'overview' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('overview'); }, <LayoutDashboard size={17} />, 'Overview')}
+          {sidebarBtn(activeTab === 'students' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('students'); }, <Users size={17} />, 'Students')}
+          {sidebarBtn(activeTab === 'results' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('results'); }, <BarChart2 size={17} />, 'Results')}
+          {sidebarBtn(activeTab === 'tests' || !!editingTest, () => { closeEditor(); setSelectedStudent(null); setActiveTab('tests'); }, <FlaskConical size={17} />, 'Manage Tests')}
+          {sidebarBtn(activeTab === 'doubts' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('doubts'); }, <ClipboardCheck size={17} />, 'Doubts')}
         </nav>
         <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', marginTop: '16px', borderRadius: '14px', border: 'none', background: 'transparent', color: '#94a3b8', fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.18em', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
           onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}
@@ -895,6 +1096,7 @@ const AdminDashboard = () => {
 
         {editingTest
           ? renderQuestionEditor()
+          : selectedStudent ? renderStudentProfile()
           : activeTab === 'overview' ? renderOverview()
           : activeTab === 'students' ? renderStudents()
           : activeTab === 'results' ? renderResults()
