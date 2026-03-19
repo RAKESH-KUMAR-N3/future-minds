@@ -15,6 +15,7 @@ const StudentDashboard = () => {
     const [doubtForm, setDoubtForm] = useState({ question: '', subject: 'General' });
     const [doubtMsg, setDoubtMsg] = useState('');
     const [loading, setLoading] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [stats, setStats] = useState({ total: 0, avgScore: 0, totalXP: 0, recent: [] });
 
     const getColor = () => {
@@ -95,22 +96,42 @@ const StudentDashboard = () => {
     });
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif', padding: '24px', paddingTop: '104px', gap: '24px' }}>
+        <div className="student-container" style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif', padding: '24px', paddingTop: '104px', gap: '24px' }}>
+            
+            {/* ── MOBILE HEADER ────────────────────────── */}
+            <div className="student-mobile-header" style={{ display: 'none' }}>
+                <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', color: '#0f172a', cursor: 'pointer', padding: '10px' }}>
+                    <LayoutDashboard size={26} />
+                </button>
+                <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <img src={logo} alt="Logo" style={{ height: '32px', width: 'auto' }} />
+                    <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.2rem', color: '#0f172a' }}>FutureMinds</span>
+                </div>
+                <div style={{ width: '46px' }} /> {/* Spacer */}
+            </div>
+
+            {/* Overlay for mobile sidebar */}
+            {sidebarOpen && <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)', zIndex: 1050 }} />}
 
             {/* ── SIDEBAR ─────────────────────────────── */}
-            <aside style={{ width: '280px', flexShrink: 0, background: 'white', borderRadius: '32px', padding: '36px 24px', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 30px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }}>
-                <div onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', marginBottom: '40px' }}>
-                    <img src={logo} alt="Logo" style={{ height: '44px', width: 'auto' }} />
-                    <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', lineHeight: 1 }}>
-                        <span style={{ color: '#0f172a' }}>Future</span><span style={{ color: '#39B54A' }}>Minds</span>
-                    </span>
+            <aside className={`student-sidebar ${sidebarOpen ? 'open' : ''}`} style={{ width: '280px', flexShrink: 0, background: 'white', borderRadius: '32px', padding: '36px 24px', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 30px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
+                    <div onClick={() => { navigate('/'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                        <img src={logo} alt="Logo" style={{ height: '44px', width: 'auto' }} />
+                        <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', lineHeight: 1 }}>
+                            <span style={{ color: '#0f172a' }}>Future</span><span style={{ color: '#39B54A' }}>Minds</span>
+                        </span>
+                    </div>
+                    <button className="student-sidebar-close" onClick={() => setSidebarOpen(false)} style={{ display: 'none', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '10px' }}>
+                        <Zap size={24} style={{ transform: 'rotate(45deg)' }} />
+                    </button>
                 </div>
                 
                 <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <button style={sidebarItemStyle(activeTab === 'overview')} onClick={() => setActiveTab('overview')}><LayoutDashboard size={18} /> Learning Space</button>
-                    <button style={sidebarItemStyle(false)} onClick={() => navigate('/mock-tests')}><Target size={18} /> My Daily Tests</button>
-                    <button style={sidebarItemStyle(activeTab === 'achievements')} onClick={() => setActiveTab('achievements')}><Award size={18} /> Trophy Room</button>
-                    <button style={sidebarItemStyle(activeTab === 'doubts')} onClick={() => setActiveTab('doubts')}><Zap size={18} /> My Doubts</button>
+                    <button style={sidebarItemStyle(activeTab === 'overview')} onClick={() => { setActiveTab('overview'); setSidebarOpen(false); }}><LayoutDashboard size={18} /> Learning Space</button>
+                    <button style={sidebarItemStyle(false)} onClick={() => { navigate('/mock-tests'); setSidebarOpen(false); }}><Target size={18} /> Daily Tests</button>
+                    <button style={sidebarItemStyle(activeTab === 'achievements')} onClick={() => { setActiveTab('achievements'); setSidebarOpen(false); }}><Award size={18} /> Trophy Room</button>
+                    <button style={sidebarItemStyle(activeTab === 'doubts')} onClick={() => { setActiveTab('doubts'); setSidebarOpen(false); }}><Zap size={18} /> My Doubts</button>
                 </nav>
 
                 <div style={{ background: '#f8fafc', borderRadius: '20px', padding: '20px', marginBottom: '16px', border: '1px solid #f1f5f9' }}>
@@ -137,15 +158,15 @@ const StudentDashboard = () => {
             </aside>
 
             {/* ── MAIN CONTENT ────────────────────────── */}
-            <main style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '16px' }}>
+            <main className="student-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto' }}>
+                <div className="student-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '16px' }}>
                     <div>
                         <p style={{ color: '#39B54A', fontWeight: '900', textTransform: 'uppercase', fontSize: '0.7rem' }}>Dashboard</p>
                         <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '2.8rem', color: '#0f172a', lineHeight: 1 }}>
                             {activeTab === 'doubts' ? 'Ask the Wizards 🧙‍♂️' : activeTab === 'achievements' ? 'Trophy Room 🏆' : 'Welcome, Hero! 👋'}
                         </h1>
                     </div>
-                    <div style={{ background: 'white', padding: '16px 28px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div className="student-rank-card" style={{ background: 'white', padding: '16px 28px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ padding: '10px', background: '#fef9c3', borderRadius: '12px' }}>
                             <Star size={20} color="#eab308" fill="#eab308" />
                         </div>
@@ -217,17 +238,36 @@ const StudentDashboard = () => {
                         ))}
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '24px', flex: 1 }}>
+                    <div className="student-overview-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '24px', flex: 1 }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                            <div style={{ background: `linear-gradient(135deg, ${color} 0%, #0f172a 100%)`, borderRadius: '36px', padding: '56px 48px', color: 'white', position: 'relative', overflow: 'hidden', minHeight: '280px', display: 'flex', alignItems: 'flex-end' }}>
+                            <div className="student-hero-banner" style={{ background: `linear-gradient(135deg, ${color} 0%, #0f172a 100%)`, borderRadius: '36px', padding: '56px 48px', color: 'white', position: 'relative', overflow: 'hidden', minHeight: '280px', display: 'flex', alignItems: 'flex-end' }}>
                                 <div style={{ position: 'relative', zIndex: 1, maxWidth: '500px' }}>
                                     <h2 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '2.2rem', marginBottom: '12px', lineHeight: '1.1' }}>Your Math Quest<br />Awaits!</h2>
                                     <button onClick={() => navigate('/mock-tests')} style={{ background: 'white', color: '#0f172a', border: 'none', borderRadius: '16px', padding: '14px 32px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>Resume Daily Test <Rocket size={20} /></button>
                                 </div>
                             </div>
+                            
+                            {/* New Stats Bar for Mobile */}
+                            <div className="student-stats-mobile-grid" style={{ display: 'none' }}>
+                                {[
+                                    { label: 'Total Quests', value: stats.total, color: '#3b82f6', bg: '#eff6ff', icon: <ClipboardCheck size={20} /> },
+                                    { label: 'Avg Score', value: `${stats.avgScore}%`, color: '#39B54A', bg: '#f0fdf4', icon: <Target size={20} /> },
+                                    { label: 'Total XP', value: stats.totalXP, color: '#f97316', bg: '#fff7ed', icon: <Zap size={20} /> },
+                                    { label: 'Level', value: Math.floor(stats.totalXP / 500) + 1, color: '#8b5cf6', bg: '#f5f3ff', icon: <Trophy size={20} /> },
+                                ].map((s, i) => (
+                                    <div key={i} style={{ background: 'white', borderRadius: '20px', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid #f1f5f9' }}>
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: s.bg, color: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.icon}</div>
+                                        <div>
+                                            <p style={{ fontSize: '0.6rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase' }}>{s.label}</p>
+                                            <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.1rem', color: '#0f172a' }}>{s.value}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
                             <div>
                                 <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a', marginBottom: '16px' }}>Magic Missions</h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                <div className="student-mission-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                                     {[{ title: 'Word Master Quest', icon: <BookOpen size={22} />, bg: '#eef2ff', color: '#6366f1', pct: 60 }, { title: 'Number Ninja Quest', icon: <Star size={22} />, bg: '#f5f3ff', color: '#8b5cf6', pct: 40 }].map((m, i) => (
                                         <div key={i} style={{ background: 'white', borderRadius: '24px', padding: '28px', border: '1px solid #f1f5f9', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
                                             <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: m.bg, color: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>{m.icon}</div>
@@ -239,11 +279,12 @@ const StudentDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+                        <div className="student-overview-secondary" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                             <div style={{ background: 'white', borderRadius: '28px', padding: '32px', border: '1px solid #f1f5f9', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
                                 <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.1rem', color: '#0f172a', textAlign: 'center', marginBottom: '20px' }}>Adventure Map</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    {[{ title: 'Daily Challenges', icon: <ClipboardCheck size={20} />, color: '#39B54A', bg: '#f0fdf4', path: '/mock-tests' }, { title: 'Grand Exam', icon: <Trophy size={20} />, color: '#f97316', bg: '#fff7ed', path: '/grand-tests', locked: true }].map((item, idx) => (
+                                    {[{ title: 'Daily Tests', icon: <ClipboardCheck size={20} />, color: '#39B54A', bg: '#f0fdf4', path: '/mock-tests' }, { title: 'Grand Exams', icon: <Trophy size={20} />, color: '#f97316', bg: '#fff7ed', path: '/grand-tests', locked: true }].map((item, idx) => (
                                         <div key={idx} onClick={() => !item.locked && navigate(item.path)} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '16px', background: '#f8fafc', cursor: item.locked ? 'default' : 'pointer', opacity: item.locked ? 0.5 : 1 }}>
                                             <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.color }}>{item.icon}</div>
                                             <div><p style={{ fontWeight: '900', fontSize: '0.85rem' }}>{item.title}</p></div>
@@ -251,7 +292,7 @@ const StudentDashboard = () => {
                                     ))}
                                 </div>
                             </div>
-                            <div style={{ background: 'white', borderRadius: '28px', padding: '32px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <div className="student-chart-card" style={{ background: 'white', borderRadius: '28px', padding: '32px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.1rem', color: '#0f172a', marginBottom: '28px' }}>Weekly Spark</h3>
                                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', height: '160px' }}>
                                     {(stats.recent.length > 0 ? stats.recent : [45, 75, 35, 95, 60]).map((h, i) => (
@@ -264,6 +305,29 @@ const StudentDashboard = () => {
                     </div>
                 )}
             </main>
+
+            <style>{`
+                @media (max-width: 1024px) {
+                    .student-container { padding: 16px !important; padding-top: 80px !important; display: block !important; }
+                    .student-sidebar { position: fixed !important; top: 0; left: -100%; height: 100vh !important; z-index: 2000 !important; transition: all 0.3s ease; border-radius: 0 32px 32px 0 !important; }
+                    .student-sidebar.open { left: 0 !important; }
+                    .student-sidebar-close { display: flex !important; }
+                    .student-mobile-header { position: fixed !important; top: 0; left: 0; right: 0; height: 64px !important; background: white !important; display: flex !important; align-items: center !important; justify-content: space-between !important; padding: 0 16px !important; z-index: 1000 !important; border-bottom: 1px solid #f1f5f9; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+                    .student-header-row { flex-direction: column !important; align-items: flex-start !important; }
+                    .student-header-row h1 { font-size: 2rem !important; margin-top: 8px !important; }
+                    .student-rank-card { width: 100% !important; margin-top: 16px !important; }
+                    .student-overview-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+                    .student-hero-banner { padding: 32px 24px !important; min-height: 200px !important; }
+                    .student-hero-banner h2 { font-size: 1.6rem !important; }
+                    .student-stats-mobile-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+                    .student-mission-grid { grid-template-columns: 1fr !important; }
+                    .student-overview-secondary { width: 100% !important; }
+                    .student-chart-card { display: none !important; }
+                }
+                @media (max-width: 480px) {
+                    .student-stats-mobile-grid { grid-template-columns: 1fr !important; }
+                }
+            `}</style>
         </div>
     );
 };

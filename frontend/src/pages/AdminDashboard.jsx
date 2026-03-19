@@ -282,7 +282,8 @@ const AdminDashboard = () => {
 
   const typeBadge = (type) => {
     const c = type === 'grand' ? { bg: '#fff7ed', color: '#f97316' } : { bg: '#eff6ff', color: '#3b82f6' };
-    return <span style={{ background: c.bg, color: c.color, padding: '4px 12px', borderRadius: '99px', fontSize: '0.65rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{type}</span>;
+    const label = type === 'mock' ? 'DAILY TEST' : type === 'grand' ? 'GRAND EXAM' : type;
+    return <span style={{ background: c.bg, color: c.color, padding: '4px 12px', borderRadius: '99px', fontSize: '0.65rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</span>;
   };
 
   const sidebarBtn = (active, onClick, icon, label) => (
@@ -314,7 +315,7 @@ const AdminDashboard = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+      <div className="admin-editor-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <button onClick={closeEditor} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '10px 18px', cursor: 'pointer', fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#64748b', transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; }}
@@ -326,7 +327,7 @@ const AdminDashboard = () => {
             <h2 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.4rem', color: '#0f172a', lineHeight: 1 }}>{editingTest.title}</h2>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div className="admin-editor-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ background: '#f0fdf4', color: '#16a34a', padding: '6px 16px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: '900', border: '1px solid #bbf7d0' }}>
             {questions.length} Question{questions.length !== 1 ? 's' : ''}
           </span>
@@ -359,7 +360,7 @@ const AdminDashboard = () => {
 
       {/* Question Cards */}
       {questions.map((q, qi) => (
-        <div key={qi} style={{ ...card, padding: '28px', position: 'relative', border: '1px solid #e2e8f0' }}>
+        <div key={qi} className="admin-question-card" style={{ ...card, padding: '28px', position: 'relative', border: '1px solid #e2e8f0' }}>
 
           {/* Q number + Delete */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -394,7 +395,7 @@ const AdminDashboard = () => {
             <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '12px' }}>
               Options — Click ✓ to mark correct answer
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div className="admin-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               {q.options.map((opt, oi) => {
                 const isCorrect = q.correctAnswer === oi;
                 return (
@@ -435,7 +436,7 @@ const AdminDashboard = () => {
 
       {/* Bottom Save bar */}
       {questions.length > 0 && (
-        <div style={{ position: 'sticky', bottom: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+        <div className="admin-editor-sticky-bar" style={{ position: 'sticky', bottom: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px', zIndex: 10 }}>
           <button onClick={addQuestion} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'white', color: '#3b82f6', border: '2px solid #bfdbfe', borderRadius: '14px', padding: '13px 24px', cursor: 'pointer', fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.15em', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'white'; }}>
@@ -630,9 +631,9 @@ const AdminDashboard = () => {
         </div>
 
         {/* Identity Panel */}
-        <div style={{ ...card, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '30px' }}>
+        <div className="admin-profile-header" style={{ ...card, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '30px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <div style={{ width: '64px', height: '64px', background: '#eff6ff', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '64px', height: '64px', background: '#eff6ff', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Users size={32} color="#3b82f6" />
             </div>
             <div>
@@ -640,7 +641,7 @@ const AdminDashboard = () => {
               <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '6px' }}>@{selectedStudent.username}</p>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '30px', textAlign: 'right' }}>
+          <div className="admin-profile-meta" style={{ display: 'flex', gap: '30px', textAlign: 'right' }}>
             <div>
               <p style={{ fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>Password</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
@@ -658,15 +659,11 @@ const AdminDashboard = () => {
               <p style={{ fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>Category</p>
               {roleBadge(selectedStudent.role)}
             </div>
-            <div>
-              <p style={{ fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>Enrolled</p>
-              <p style={{ fontWeight: '700', fontSize: '0.9rem', color: '#0f172a' }}>{selectedStudent.createdAt ? new Date(selectedStudent.createdAt).toLocaleDateString() : '—'}</p>
-            </div>
           </div>
         </div>
 
         {/* Key Metrics */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        <div className="admin-profile-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
           {[
             { label: 'Practice Tests', value: totalTests, color: '#3b82f6', bg: '#eff6ff', icon: <ClipboardCheck size={20} color="#3b82f6" /> },
             { label: 'Overall Average', value: totalTests > 0 ? `${avgScore}%` : '—', color: '#39B54A', bg: '#f0fdf4', icon: <BarChart2 size={20} color="#39B54A" /> },
@@ -706,25 +703,42 @@ const AdminDashboard = () => {
           {/* Test History */}
           <div style={{ ...card, padding: '24px' }}>
             <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.1rem', color: '#0f172a', marginBottom: '20px' }}>Complete History</h3>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Test Target', 'Score', 'Percentage', 'Time', 'Date'].map(h => <th key={h} style={{ textAlign: 'left', padding: '10px 12px', fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
-                <tbody>
-                  {studentResults.map((r, i) => (
-                    <tr key={i} style={{ borderBottom: '1px solid #f8fafc' }}>
-                      <td style={{ padding: '12px', color: '#0f172a', fontWeight: '700', fontSize: '0.9rem' }}>{r.testTitle}</td>
-                      <td style={{ padding: '12px', color: '#64748b', fontSize: '0.85rem', fontWeight: '700' }}>{r.score}/{r.total}</td>
-                      <td style={{ padding: '12px' }}>
-                        <span style={{ background: r.percentage >= 75 ? '#f0fdf4' : r.percentage >= 40 ? '#fff7ed' : '#fef2f2', color: r.percentage >= 75 ? '#16a34a' : r.percentage >= 40 ? '#f97316' : '#ef4444', padding: '4px 10px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: '900' }}>{r.percentage}%</span>
-                      </td>
-                      <td style={{ padding: '12px', color: '#94a3b8', fontSize: '0.8rem' }}>{Math.floor((r.timeTaken||0)/60)}m {(r.timeTaken||0)%60}s</td>
-                      <td style={{ padding: '12px', color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(r.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
-                  {studentResults.length === 0 && <tr><td colSpan="5" style={{ padding: '30px', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>No assessments submitted yet.</td></tr>}
-                </tbody>
-              </table>
-            </div>
+          {/* History Desktop Table */}
+          <div className="admin-log-table-desktop" style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Test Target', 'Score', 'Percentage', 'Time', 'Date'].map(h => <th key={h} style={{ textAlign: 'left', padding: '10px 12px', fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
+              <tbody>
+                {studentResults.map((r, i) => (
+                  <tr key={i} style={{ borderBottom: '1px solid #f8fafc' }}>
+                    <td style={{ padding: '12px', color: '#0f172a', fontWeight: '700', fontSize: '0.9rem' }}>{r.testTitle}</td>
+                    <td style={{ padding: '12px', color: '#64748b', fontSize: '0.85rem', fontWeight: '700' }}>{r.score}/{r.total}</td>
+                    <td style={{ padding: '12px' }}>
+                      <span style={{ background: r.percentage >= 75 ? '#f0fdf4' : r.percentage >= 40 ? '#fff7ed' : '#fef2f2', color: r.percentage >= 75 ? '#16a34a' : r.percentage >= 40 ? '#f97316' : '#ef4444', padding: '4px 10px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: '900' }}>{r.percentage}%</span>
+                    </td>
+                    <td style={{ padding: '12px', color: '#94a3b8', fontSize: '0.8rem' }}>{Math.floor((r.timeTaken||0)/60)}m {(r.timeTaken||0)%60}s</td>
+                    <td style={{ padding: '12px', color: '#94a3b8', fontSize: '0.8rem' }}>{new Date(r.createdAt).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* History Mobile List */}
+          <div className="admin-log-list-mobile" style={{ display: 'none' }}>
+            {studentResults.map((r, i) => (
+              <div key={i} style={{ padding: '16px 0', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.85rem' }}>{r.testTitle}</span>
+                  <span style={{ background: r.percentage >= 75 ? '#f0fdf4' : '#fff7ed', color: r.percentage >= 75 ? '#16a34a' : '#f97316', padding: '4px 10px', borderRadius: '99px', fontSize: '0.65rem', fontWeight: '900' }}>{r.percentage}%</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748b' }}>
+                  <span>Score: <b>{r.score}/{r.total}</b></span>
+                  <span>{new Date(r.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {studentResults.length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '40px', fontSize: '0.85rem' }}>No assessments yet.</p>}
           </div>
         </div>
       </div>
@@ -745,7 +759,7 @@ const AdminDashboard = () => {
             <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><UserPlus size={20} color="#3b82f6" /></div>
             <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.2rem', color: '#0f172a' }}>Create New Student</h3>
           </div>
-          <form onSubmit={handleCreateStudent} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <form onSubmit={handleCreateStudent} className="admin-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Username</label>
               <input type="text" placeholder="e.g. john_doe" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} required style={inputStyle} onFocus={focusStyle} onBlur={blurStyle} />
@@ -775,52 +789,85 @@ const AdminDashboard = () => {
           <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a' }}>Student Roster</h3>
           <span style={{ background: '#f8fafc', border: '1px solid #f1f5f9', padding: '6px 16px', borderRadius: '99px', fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{allUsers.filter(u => u.role !== 'admin').length} Students</span>
         </div>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Name', 'Username', 'Password', 'Category', 'Joined', 'Action'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 16px', fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
-          <tbody>
-            {allUsers.filter(u => u.role !== 'admin').map((u, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid #f8fafc', transition: 'background 0.15s' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                <td style={{ padding: '16px', fontWeight: '700', color: '#0f172a' }}>{u.name || u.username}</td>
-                <td style={{ padding: '16px', color: '#64748b', fontSize: '0.9rem' }}>{u.username}</td>
-                <td style={{ padding: '16px', color: '#0f172a', fontSize: '0.9rem', fontWeight: '600', fontFamily: 'monospace' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    {u.passcode ? (visiblePasswords[u._id] ? u.passcode : '••••••••') : <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }}>********</span>}
-                    {u.passcode && (
-                      <button onClick={() => togglePassword(u._id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0', display: 'flex' }} title="Toggle Password">
-                        {visiblePasswords[u._id] ? <EyeOff size={14} /> : <Eye size={14} />}
+        {/* Desktop Table View */}
+        <div className="admin-log-table-desktop" style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Name', 'Username', 'Password', 'Category', 'Joined', 'Action'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 16px', fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
+            <tbody>
+              {allUsers.filter(u => u.role !== 'admin').map((u, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid #f8fafc', transition: 'background 0.15s' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <td style={{ padding: '16px', fontWeight: '700', color: '#0f172a' }}>{u.name || u.username}</td>
+                  <td style={{ padding: '16px', color: '#64748b', fontSize: '0.9rem' }}>{u.username}</td>
+                  <td style={{ padding: '16px', color: '#0f172a', fontSize: '0.9rem', fontWeight: '600', fontFamily: 'monospace' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {u.passcode ? (visiblePasswords[u._id] ? u.passcode : '••••••••') : <span style={{ color: '#94a3b8', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }}>********</span>}
+                      {u.passcode && (
+                        <button onClick={() => togglePassword(u._id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0', display: 'flex' }} title="Toggle Password">
+                          {visiblePasswords[u._id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td style={{ padding: '16px' }}>{roleBadge(u.role)}</td>
+                  <td style={{ padding: '16px', color: '#94a3b8', fontSize: '0.82rem' }}>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
+                  <td style={{ padding: '16px' }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button onClick={() => setSelectedStudent(u)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#eff6ff', color: '#3b82f6', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#3b82f6'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#3b82f6'; }}>
+                        <Eye size={14} /> Profile
                       </button>
-                    )}
-                  </div>
-                </td>
-                <td style={{ padding: '16px' }}>{roleBadge(u.role)}</td>
-                <td style={{ padding: '16px', color: '#94a3b8', fontSize: '0.82rem' }}>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
-                <td style={{ padding: '16px' }}>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => setSelectedStudent(u)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#eff6ff', color: '#3b82f6', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#3b82f6'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#3b82f6'; }}>
-                      <Eye size={14} /> Profile
+                      <button onClick={() => handleResetPassword(u._id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }} onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#64748b'; }}>
+                        <Key size={14} /> Password
+                      </button>
+                      <button onClick={() => handleDeleteUser(u._id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}>
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile List View */}
+        <div className="admin-log-list-mobile" style={{ display: 'none' }}>
+          {allUsers.filter(u => u.role !== 'admin').map((u, i) => (
+            <div key={i} style={{ padding: '20px 0', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '900', color: '#0f172a' }}>{u.name || u.username}</h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>@{u.username}</p>
+                </div>
+                {roleBadge(u.role)}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '10px 14px', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Key size={14} color="#94a3b8" />
+                  <span style={{ fontFamily: 'monospace', fontWeight: '700', fontSize: '0.9rem', color: '#0f172a' }}>
+                    {u.passcode ? (visiblePasswords[u._id] ? u.passcode : '••••••••') : '********'}
+                  </span>
+                  {u.passcode && (
+                    <button onClick={() => togglePassword(u._id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                      {visiblePasswords[u._id] ? <EyeOff size={14} /> : <Eye size={14} />}
                     </button>
-                    <button onClick={() => handleResetPassword(u._id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; }} onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#64748b'; }}>
-                      <Key size={14} /> Password
-                    </button>
-                    <button onClick={() => handleDeleteUser(u._id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}>
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {allUsers.filter(u => u.role !== 'admin').length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '40px', fontSize: '0.9rem' }}>No students enrolled yet.</p>}
-      </div>
+                  )}
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => setSelectedStudent(u)} style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '0.7rem', fontWeight: '900' }}>PROFILE</button>
+                  <button onClick={() => handleDeleteUser(u._id)} style={{ background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '0.7rem', fontWeight: '900' }}>DELETE</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {allUsers.filter(u => u.role !== 'admin').length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '40px', fontSize: '0.9rem' }}>No heroes enrolled yet.</p>}
     </div>
     </div>
   );
 
   const renderResults = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="admin-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
         {[{ label: 'Total Submissions', value: stats.total, color: '#3b82f6', bg: '#eff6ff' }, { label: 'Overall Avg Score', value: stats.total > 0 ? `${stats.avgScore}%` : '—', color: '#39B54A', bg: '#f0fdf4' }].map((s, i) => (
           <div key={i} style={{ ...card, padding: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><BarChart2 size={24} color={s.color} /></div>
@@ -833,7 +880,8 @@ const AdminDashboard = () => {
       </div>
       <div style={card}>
         <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a', marginBottom: '24px' }}>All Exam Results</h3>
-        <div style={{ overflowX: 'auto' }}>
+        {/* Results Desktop Table */}
+        <div className="admin-log-table-desktop" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Student', 'Test', 'Score', 'Percentage', 'Time Taken', 'Date'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 16px', fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
             <tbody>
@@ -855,8 +903,25 @@ const AdminDashboard = () => {
               })}
             </tbody>
           </table>
-          {results.length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '40px', fontSize: '0.9rem' }}>No test results yet.</p>}
         </div>
+
+        {/* Results Mobile List */}
+        <div className="admin-log-list-mobile" style={{ display: 'none' }}>
+          {results.map((r, i) => (
+            <div key={i} style={{ padding: '16px 0', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.85rem' }}>{r.username}</span>
+                <span style={{ background: r.percentage >= 75 ? '#f0fdf4' : '#fff7ed', color: r.percentage >= 75 ? '#16a34a' : '#f97316', padding: '4px 10px', borderRadius: '99px', fontSize: '0.65rem', fontWeight: '900' }}>{r.percentage}%</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.75rem', color: '#475569', fontWeight: '600' }}>{r.testTitle}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#94a3b8' }}>
+                <span>Score: <b>{r.score}/{r.total}</b></span>
+                <span>{new Date(r.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        {results.length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '40px', fontSize: '0.9rem' }}>No test results yet.</p>}
       </div>
     </div>
   );
@@ -929,14 +994,14 @@ const AdminDashboard = () => {
             <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Plus size={20} color="#3b82f6" /></div>
             <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.2rem', color: '#0f172a' }}>Create New Test</h3>
           </div>
-          <form onSubmit={handleCreateTest} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <form onSubmit={handleCreateTest} className="admin-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             {[{ label: 'Test Title', key: 'title', placeholder: 'e.g. Math Challenge', type: 'text' }, { label: 'Category', key: 'category', placeholder: 'e.g. Math, Science', type: 'text' }, { label: 'Duration (minutes)', key: 'duration', placeholder: '15', type: 'number' }].map(f => (
               <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{ fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{f.label}</label>
                 <input type={f.type} placeholder={f.placeholder} value={testForm[f.key]} onChange={e => setTestForm({ ...testForm, [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value })} required style={inputStyle} onFocus={focusStyle} onBlur={blurStyle} />
               </div>
             ))}
-            {[{ label: 'Target Role', key: 'role', options: [['sub-junior', 'Sub-Junior (6–9)'], ['junior', 'Junior (10–12)'], ['senior', 'Senior (13–15)']] }, { label: 'Test Type', key: 'type', options: [['mock', 'Daily Tests'], ['grand', 'Grand Exam']] }].map(f => (
+            {[{ label: 'Target Role', key: 'role', options: [['sub-junior', 'Sub-Junior (6–9)'], ['junior', 'Junior (10–12)'], ['senior', 'Senior (13–15)']] }, { label: 'Test Type', key: 'type', options: [['mock', 'Daily Test'], ['grand', 'Grand Exam']] }].map(f => (
               <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{ fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{f.label}</label>
                 <select value={testForm[f.key]} onChange={e => setTestForm({ ...testForm, [f.key]: e.target.value })} style={{ ...inputStyle, cursor: 'pointer' }}>
@@ -956,7 +1021,8 @@ const AdminDashboard = () => {
           <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a' }}>All Exams</h3>
           <span style={{ background: '#f8fafc', border: '1px solid #f1f5f9', padding: '6px 16px', borderRadius: '99px', fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{tests.length} Tests</span>
         </div>
-        <div style={{ overflowX: 'auto' }}>
+        {/* Tests Desktop Table */}
+        <div className="admin-log-table-desktop" style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Title', 'Category', 'Role', 'Type', 'Duration', 'Questions', 'Actions'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 16px', fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
             <tbody>
@@ -975,21 +1041,41 @@ const AdminDashboard = () => {
                   </td>
                   <td style={{ padding: '14px 16px' }}>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      {/* Edit Questions Button */}
-                      <button onClick={() => openEditor(t)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#39B54A'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#f0fdf4'; e.currentTarget.style.color = '#16a34a'; }}>
-                        ✎ Questions
-                      </button>
-                      <button onClick={() => handleDeleteTest(t._id, t.title)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}>
-                        <Trash2 size={14} />
-                      </button>
+                      <button onClick={() => openEditor(t)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#39B54A'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#f0fdf4'; e.currentTarget.style.color = '#16a34a'; }}>✎ Qs</button>
+                      <button onClick={() => handleDeleteTest(t._id, t.title)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: '10px', padding: '7px 14px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '900', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}><Trash2 size={14} /></button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {tests.length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '40px', fontSize: '0.9rem' }}>No tests yet.</p>}
         </div>
+
+        {/* Tests Mobile List */}
+        <div className="admin-log-list-mobile" style={{ display: 'none' }}>
+          {tests.map((t, i) => (
+            <div key={i} style={{ padding: '20px 0', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '900', color: '#0f172a' }}>{t.title}</h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>{t.category} | {t.duration}m</p>
+                </div>
+                {typeBadge(t.type)}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {roleBadge(t.role)}
+                  <span style={{ fontSize: '0.75rem', fontWeight: '800', color: (t.questions || []).length === 0 ? '#ef4444' : '#0f172a' }}>{(t.questions || []).length} Qs</span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => openEditor(t)} style={{ background: '#39B54A', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '0.7rem', fontWeight: '900' }}>EDIT Qs</button>
+                  <button onClick={() => handleDeleteTest(t._id, t.title)} style={{ background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 12px', fontSize: '0.7rem', fontWeight: '900' }}>DEL</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {tests.length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', padding: '40px', fontSize: '0.9rem' }}>No tests yet.</p>}
       </div>
     </div>
   );
@@ -1043,10 +1129,20 @@ const AdminDashboard = () => {
           .admin-main { height: auto !important; overflow: visible !important; }
           .admin-log-table-desktop { display: none !important; }
           .admin-log-list-mobile { display: block !important; }
+          .admin-profile-header { padding: 20px !important; flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; }
+          .admin-profile-meta { text-align: left !important; justify-content: flex-start !important; gap: 20px !important; width: 100% !important; }
+          .admin-profile-metrics { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+          .admin-grid-2 { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .admin-editor-header { flex-direction: column !important; align-items: flex-start !important; }
+          .admin-editor-header-actions { width: 100% !important; justify-content: space-between !important; }
+          .admin-editor-sticky-bar { flex-direction: column !important; gap: 10px !important; }
+          .admin-editor-sticky-bar button { width: 100% !important; }
+          .admin-question-card { padding: 20px !important; }
         }
         @media (max-width: 480px) {
-          .admin-stat-grid { gridTemplateColumns: 1fr !important; }
-          .admin-stat-mobile-only { gridTemplateColumns: repeat(2, 1fr) !important; gap: 8px !important; }
+          .admin-stat-grid { grid-template-columns: 1fr !important; }
+          .admin-stat-mobile-only { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+          .admin-profile-metrics { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
@@ -1086,16 +1182,11 @@ const AdminDashboard = () => {
           </span>
         </div>
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {sidebarBtn(activeTab === 'overview' && !editingTest, () => { closeEditor(); setActiveTab('overview'); setShowMobileSidebar(false); }, <LayoutDashboard size={17} />, 'Overview')}
-          {sidebarBtn(activeTab === 'students' && !editingTest, () => { closeEditor(); setActiveTab('students'); setShowMobileSidebar(false); }, <Users size={17} />, 'Students')}
-          {sidebarBtn(activeTab === 'results' && !editingTest, () => { closeEditor(); setActiveTab('results'); setShowMobileSidebar(false); }, <BarChart2 size={17} />, 'Results')}
-          {sidebarBtn(activeTab === 'tests' || !!editingTest, () => { closeEditor(); setActiveTab('tests'); setShowMobileSidebar(false); }, <FlaskConical size={17} />, 'Manage Tests')}
-          {sidebarBtn(activeTab === 'doubts' && !editingTest, () => { closeEditor(); setActiveTab('doubts'); setShowMobileSidebar(false); }, <ClipboardCheck size={17} />, 'Doubts')}
-          {sidebarBtn(activeTab === 'overview' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('overview'); }, <LayoutDashboard size={17} />, 'Overview')}
-          {sidebarBtn(activeTab === 'students' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('students'); }, <Users size={17} />, 'Students')}
-          {sidebarBtn(activeTab === 'results' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('results'); }, <BarChart2 size={17} />, 'Results')}
-          {sidebarBtn(activeTab === 'tests' || !!editingTest, () => { closeEditor(); setSelectedStudent(null); setActiveTab('tests'); }, <FlaskConical size={17} />, 'Manage Tests')}
-          {sidebarBtn(activeTab === 'doubts' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('doubts'); }, <ClipboardCheck size={17} />, 'Doubts')}
+          {sidebarBtn(activeTab === 'overview' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('overview'); setShowMobileSidebar(false); }, <LayoutDashboard size={17} />, 'Overview')}
+          {sidebarBtn(activeTab === 'students' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('students'); setShowMobileSidebar(false); }, <Users size={17} />, 'Students')}
+          {sidebarBtn(activeTab === 'results' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('results'); setShowMobileSidebar(false); }, <BarChart2 size={17} />, 'Results')}
+          {sidebarBtn(activeTab === 'tests' || !!editingTest, () => { closeEditor(); setSelectedStudent(null); setActiveTab('tests'); setShowMobileSidebar(false); }, <FlaskConical size={17} />, 'Manage Tests')}
+          {sidebarBtn(activeTab === 'doubts' && !editingTest && !selectedStudent, () => { closeEditor(); setSelectedStudent(null); setActiveTab('doubts'); setShowMobileSidebar(false); }, <ClipboardCheck size={17} />, 'Doubts')}
         </nav>
         <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', marginTop: '16px', borderRadius: '14px', border: 'none', background: 'transparent', color: '#94a3b8', fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.18em', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
           onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}
@@ -1136,7 +1227,7 @@ const AdminDashboard = () => {
         {[
           { label: 'HOME', icon: <HomeIcon size={20} />, id: 'overview' },
           { label: 'ALL', icon: <Search size={20} />, id: 'results' },
-          { label: 'MOCK', icon: <ClipboardCheck size={20} />, id: 'tests' },
+          { label: 'DAILY', icon: <ClipboardCheck size={20} />, id: 'tests' },
           { label: 'GRAND', icon: <Trophy size={20} />, id: 'tests_grand' },
           { label: 'PROFILE', icon: <div style={{ width: '22px', height: '22px', background: '#6366f1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.6rem', fontWeight: '900' }}>RK</div>, id: 'students' }
         ].map(item => (
