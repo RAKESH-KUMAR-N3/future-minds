@@ -2,9 +2,17 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const verifyToken = require('../middleware/verifyToken');
 
-// Create user (Admin action — hashes password)
-router.post('/', async (req, res) => {
+const isAdmin = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ success: false, message: 'Admin access required' });
+  }
+  next();
+};
+
+// Create user (Admin only)
+router.post('/', verifyToken, isAdmin, async (req, res) => {
   try {
     const { username, password, role, name } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,12 +25,35 @@ router.post('/', async (req, res) => {
 });
 
 // Get all users (Admin only)
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, isAdmin, async (req, res) => {
   try {
     const users = await User.find().select('-password');
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+// Delete user (Admin only)
+router.delete('/:id', verifyToken, isAdmin, async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Reset Password (Admin only)
+router.put('/:id/reset-password', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ success: false, message: 'Password is required' });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.findByIdAndUpdate(req.params.id, { password: hashedPassword });
+    res.json({ success: true, message: 'Passcode updated successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

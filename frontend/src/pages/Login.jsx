@@ -9,8 +9,14 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/dashboard');
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +30,8 @@ const Login = () => {
       setError(result.message || 'Invalid credentials. Try again!');
     }
   };
+
+  if (authLoading) return null;
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-inter">

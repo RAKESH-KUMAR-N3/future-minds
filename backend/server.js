@@ -30,6 +30,7 @@ mongoose.connect(process.env.MONGODB_URL)
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/tests', require('./routes/testRoutes'));
 app.use('/api/results', require('./routes/resultRoutes'));
+app.use('/api/doubts', require('./routes/doubtRoutes'));
 
 // ── LOGIN ──────────────────────────────────────────────────────
 app.post('/api/login', async (req, res) => {
@@ -110,6 +111,7 @@ const seedData = async () => {
       ]
     };
 
+    const testCount = await Test.countDocuments();
     if (testCount === 0) {
       // No tests at all — create from scratch
       await Test.create([

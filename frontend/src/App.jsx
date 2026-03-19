@@ -10,8 +10,10 @@ import Navbar from './components/Navbar';
 import TestRunner from './pages/TestRunner';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   
+  if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Outfit, sans-serif', fontWeight: '900', color: '#94a3b8' }}>LOADING...</div>;
+
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -24,7 +26,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 const DashboardRedirect = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return null;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role === 'admin') return <Navigate to="/admin" replace />;
   return <Navigate to="/student" replace />;
