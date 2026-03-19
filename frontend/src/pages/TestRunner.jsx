@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, ChevronRight, Trophy, RotateCcw, Home, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import scoreBg from '../assets/future minds 5.jpg';
 
 const TestRunner = () => {
     const location = useLocation();
@@ -125,18 +126,43 @@ const TestRunner = () => {
     // ── RESULT SCREEN ──────────────────────────────────────────
     if (showResult) {
         return (
-            <div style={{ minHeight: '100vh', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 60px', fontFamily: 'Inter, sans-serif' }}>
-                <div style={{ maxWidth: '480px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '28px' }}>
+            <div style={{ minHeight: '100vh', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 60px', fontFamily: 'Inter, sans-serif', position: 'relative', overflow: 'hidden' }}>
+                
+                {/* Background Layer for Mobile */}
+                <div 
+                    className="mobile-score-bg" 
+                    style={{ 
+                        display: 'none', 
+                        position: 'absolute', 
+                        inset: 0, 
+                        background: `url("${scoreBg}") center/cover no-repeat`, 
+                        opacity: 0.15,
+                        zIndex: 0 
+                    }} 
+                />
 
-                    {/* Score Circle */}
-                    <div style={{ width: '160px', height: '160px', borderRadius: '50%', background: `linear-gradient(135deg, ${color}, #0f172a)`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 20px 60px ${color}40` }}>
-                        <span style={{ fontSize: '5rem' }}>{getScoreEmoji()}</span>
+                <style>{`
+                    @media (max-width: 768px) {
+                        .mobile-score-bg { display: block !important; }
+                    }
+                `}</style>
+
+                <div style={{ maxWidth: '480px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '28px', position: 'relative', zIndex: 1 }}>
+
+                    {/* Score Summary (Side-by-Side) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px', justifyContent: 'center', width: '100%', marginBottom: '10px' }}>
+                        <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: `linear-gradient(135deg, ${color}, #0f172a)`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 12px 30px ${color}33`, flexShrink: 0 }}>
+                            <span style={{ fontSize: '3.2rem' }}>{getScoreEmoji()}</span>
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                            <p style={{ color: '#94a3b8', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.6rem', marginBottom: '2px' }}>Test Result</p>
+                            <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '4rem', color: '#0f172a', letterSpacing: '-0.02em', lineHeight: 1, margin: 0 }}>{score}/{totalQ}</h1>
+                        </div>
                     </div>
 
-                    <div>
+                    <div style={{ marginTop: '-10px' }}>
                         <p style={{ color: '#94a3b8', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', fontSize: '0.7rem', marginBottom: '8px' }}>Test Complete! {saved ? '✅ Saved' : ''}</p>
-                        <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '3.5rem', color: '#0f172a', letterSpacing: '-0.02em', lineHeight: 1, marginBottom: '8px' }}>{score}/{totalQ}</h1>
-                        <p style={{ color: '#64748b', fontSize: '1.1rem', fontWeight: '500' }}>{getScoreMessage()}</p>
+                        <p style={{ color: '#64748b', fontSize: '1.2rem', fontWeight: '600', fontFamily: 'Outfit, sans-serif' }}>{getScoreMessage()}</p>
                     </div>
 
                     {/* Progress bar */}
