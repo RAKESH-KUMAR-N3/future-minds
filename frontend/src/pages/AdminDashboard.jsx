@@ -5,7 +5,7 @@ import {
   UserPlus, Users, LayoutDashboard, LogOut,
   ClipboardCheck, Trophy, BarChart2, Trash2, Key,
   FlaskConical, Plus, X, ChevronDown, ChevronUp,
-  CheckCircle, Save, ArrowLeft
+  CheckCircle, Save, ArrowLeft, Bell, Search, Home as HomeIcon, LayoutPanelLeft, Menu
 } from 'lucide-react';
 import logo from '../assets/future-minds logo.png';
 
@@ -20,7 +20,7 @@ const emptyQuestion = () => ({
 });
 
 const AdminDashboard = () => {
-  const { allUsers, logout, token } = useAuth();
+  const { allUsers, logout, token, user } = useAuth();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('overview');
@@ -45,6 +45,7 @@ const AdminDashboard = () => {
   const [questions, setQuestions] = useState([]);         // working copy
   const [saveMsg, setSaveMsg] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const authHeaders = useCallback(() => ({
     'Content-Type': 'application/json',
@@ -265,6 +266,22 @@ const AdminDashboard = () => {
     </button>
   );
 
+  const StatCard = ({ icon, label, value, color, pct }) => (
+    <div style={{ background: color, borderRadius: '24px', padding: '20px', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '140px', boxShadow: `0 8px 24px ${color}33`, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ background: 'rgba(255,255,255,0.2)', padding: '8px', borderRadius: '12px' }}>{icon}</div>
+      </div>
+      <div>
+        <p style={{ fontSize: '0.6rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.9, marginBottom: '2px' }}>{label}</p>
+        <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.4rem', lineHeight: 1 }}>{value}</p>
+      </div>
+      <div style={{ height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '99px', marginTop: '12px', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: 'white' }} />
+      </div>
+      <p style={{ fontSize: '0.5rem', fontWeight: '900', textTransform: 'uppercase', marginTop: '4px', opacity: 0.8 }}>{pct}% Increase</p>
+    </div>
+  );
+
   /* ══════════════════════════════════════════════════
      QUESTION EDITOR PANEL
    ══════════════════════════════════════════════════ */
@@ -413,24 +430,33 @@ const AdminDashboard = () => {
   const renderOverview = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* ROW 1: CORE ACADEMIC STATS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div className="admin-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
         {[
-          { icon: <Users size={22} color="#3b82f6" />, bg: '#eff6ff', label: 'Registered Students', value: allUsers.filter(u => u.role !== 'admin').length },
-          { icon: <CheckCircle size={22} color="#39B54A" />, bg: '#f0fdf4', label: 'Student Participation', value: new Set(results.map(r => r.username)).size },
-          { icon: <ClipboardCheck size={22} color="#8b5cf6" />, bg: '#f5f3ff', label: 'Active Assessments', value: testCount },
-          { icon: <Trophy size={22} color="#F15A24" />, bg: '#fff7ed', label: 'Class Average', value: stats.total > 0 ? `${stats.avgScore}%` : '—' },
+          { icon: <Users size={20} color="white" />, color: '#6366f1', label: 'Total Students', value: allUsers.filter(u => u.role !== 'admin').length, pct: 80 },
+          { icon: <CheckCircle size={20} color="white" />, color: '#f59e0b', label: 'Active Questers', value: new Set(results.map(r => r.username)).size, pct: 50 },
+          { icon: <ClipboardCheck size={20} color="white" />, color: '#8b5cf6', label: 'Daily Exams', value: testCount, pct: 70 },
+          { icon: <Trophy size={20} color="white" />, color: '#ef4444', label: 'Grand Exams', value: stats.total || 0, pct: 30 },
         ].map((s, i) => (
-          <div key={i} style={{ ...card, padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.icon}</div>
-            <div>
-              <p style={{ fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>{s.label}</p>
-              <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.8rem', color: '#0f172a', lineHeight: 1 }}>{s.value}</p>
+          <div key={i} className="admin-stat-desktop-only">
+            <div style={{ ...card, padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: `${s.color}11`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{React.cloneElement(s.icon, { color: s.color })}</div>
+              <div>
+                <p style={{ fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '4px' }}>{s.label}</p>
+                <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.8rem', color: '#0f172a', lineHeight: 1 }}>{s.value}</p>
+              </div>
             </div>
           </div>
         ))}
+        {/* Mobile View Specific Stats */}
+        <div className="admin-stat-mobile-only" style={{ display: 'none', gridColumn: '1 / -1', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+          <StatCard icon={<Users size={18} color="white" />} label="Total Students" value={allUsers.filter(u => u.role !== 'admin').length} color="#6366f1" pct={80} />
+          <StatCard icon={<CheckCircle size={18} color="white" />} label="Active Questers" value={new Set(results.map(r => r.username)).size} color="#f59e0b" pct={50} />
+          <StatCard icon={<ClipboardCheck size={18} color="white" />} label="Daily Exams" value={testCount} color="#8b5cf6" pct={70} />
+          <StatCard icon={<Trophy size={18} color="white" />} label="Grand Exams" value={stats.total || 0} color="#ef4444" pct={30} />
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
+      <div className="admin-content-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
         
         {/* LEFT COLUMN: LOGS & INQUIRIES */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -452,17 +478,25 @@ const AdminDashboard = () => {
               <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1rem', color: '#0f172a' }}>Recent Activity Log</h3>
               <button onClick={() => setActiveTab('results')} style={{ background: 'transparent', border: 'none', color: '#39B54A', fontWeight: '900', fontSize: '0.68rem', textTransform: 'uppercase', cursor: 'pointer' }}>Full Report</button>
             </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr style={{ borderBottom: '1px solid #f1f5f9' }}>{['Student', 'Assessment', 'Result', 'Status'].map(h => <th key={h} style={{ textAlign: 'left', padding: '10px 0', fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{h}</th>)}</tr></thead>
+            {/* Desktop Table */}
+            <div className="admin-log-table-desktop" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <th style={{ textAlign: 'left', padding: '12px 0', fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Student</th>
+                    <th style={{ textAlign: 'left', padding: '12px 0', fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Exam Choice</th>
+                    <th style={{ textAlign: 'center', padding: '12px 0', fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Score</th>
+                    <th style={{ textAlign: 'right', padding: '12px 0', fontSize: '0.62rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Status</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {results.slice(0, 5).map((r, i) => (
                     <tr key={i} style={{ borderBottom: '1px solid #f8fafc' }}>
-                      <td style={{ padding: '12px 0', fontWeight: '700', color: '#0f172a', fontSize: '0.82rem' }}>{r.username}</td>
-                      <td style={{ padding: '12px 0', color: '#64748b', fontSize: '0.8rem' }}>{r.testTitle}</td>
-                      <td style={{ padding: '12px 0', fontWeight: '900', color: '#0f172a', fontSize: '0.82rem' }}>{r.score}/{r.total}</td>
-                      <td style={{ padding: '12px 0' }}>
-                        <span style={{ fontSize: '0.65rem', fontWeight: '900', color: r.percentage >= 75 ? '#39B54A' : '#f97316' }}>
+                      <td style={{ padding: '14px 0', fontWeight: '700', color: '#0f172a', fontSize: '0.82rem' }}>{r.username}</td>
+                      <td style={{ padding: '14px 0', color: '#64748b', fontSize: '0.78rem' }}>{r.testTitle}</td>
+                      <td style={{ padding: '14px 0', fontWeight: '900', color: '#0f172a', fontSize: '0.82rem', textAlign: 'center' }}>{r.score}/{r.total}</td>
+                      <td style={{ padding: '14px 0', textAlign: 'right' }}>
+                        <span style={{ fontSize: '0.6rem', fontWeight: '900', color: r.percentage >= 75 ? '#39B54A' : '#f97316' }}>
                           {r.percentage >= 75 ? 'DISTINCTION' : r.percentage >= 40 ? 'PASSED' : 'NEEDS REVIEW'}
                         </span>
                       </td>
@@ -471,11 +505,29 @@ const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile List View */}
+            <div className="admin-log-list-mobile" style={{ display: 'none' }}>
+              {results.slice(0, 8).map((r, i) => (
+                <div key={i} style={{ padding: '16px 0', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.85rem' }}>{r.username}</span>
+                    <span style={{ fontSize: '0.6rem', fontWeight: '900', color: r.percentage >= 75 ? '#39B54A' : '#f97316', textTransform: 'uppercase' }}>
+                      {r.percentage >= 75 ? 'DISTINCTION' : r.percentage >= 40 ? 'PASSED' : 'NEEDS REVIEW'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#64748b' }}>
+                    <span style={{ opacity: 0.8 }}>{r.testTitle}</span>
+                    <span style={{ fontWeight: '800', color: '#334155' }}>{r.score}/{r.total}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* RIGHT COLUMN: ANALYTICS */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '16px' }}>
           
           {/* TOP PERFORMERS */}
           <div style={{ ...card, background: '#0f172a', color: 'white', border: 'none' }}>
@@ -565,7 +617,7 @@ const AdminDashboard = () => {
         ))}
       </div>
       <div style={card}>
-        <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a', marginBottom: '24px' }}>All Test Results</h3>
+        <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a', marginBottom: '24px' }}>All Exam Results</h3>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr style={{ borderBottom: '2px solid #f8fafc' }}>{['Student', 'Test', 'Score', 'Percentage', 'Time Taken', 'Date'].map(h => <th key={h} style={{ textAlign: 'left', padding: '12px 16px', fontSize: '0.65rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{h}</th>)}</tr></thead>
@@ -669,7 +721,7 @@ const AdminDashboard = () => {
                 <input type={f.type} placeholder={f.placeholder} value={testForm[f.key]} onChange={e => setTestForm({ ...testForm, [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value })} required style={inputStyle} onFocus={focusStyle} onBlur={blurStyle} />
               </div>
             ))}
-            {[{ label: 'Target Role', key: 'role', options: [['sub-junior', 'Sub-Junior (6–9)'], ['junior', 'Junior (10–12)'], ['senior', 'Senior (13–15)']] }, { label: 'Test Type', key: 'type', options: [['mock', 'Mock Test'], ['grand', 'Grand Test']] }].map(f => (
+            {[{ label: 'Target Role', key: 'role', options: [['sub-junior', 'Sub-Junior (6–9)'], ['junior', 'Junior (10–12)'], ['senior', 'Senior (13–15)']] }, { label: 'Test Type', key: 'type', options: [['mock', 'Daily Tests'], ['grand', 'Grand Exam']] }].map(f => (
               <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{ fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{f.label}</label>
                 <select value={testForm[f.key]} onChange={e => setTestForm({ ...testForm, [f.key]: e.target.value })} style={{ ...inputStyle, cursor: 'pointer' }}>
@@ -686,7 +738,7 @@ const AdminDashboard = () => {
       )}
       <div style={card}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a' }}>All Tests</h3>
+          <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', color: '#0f172a' }}>All Exams</h3>
           <span style={{ background: '#f8fafc', border: '1px solid #f1f5f9', padding: '6px 16px', borderRadius: '99px', fontSize: '0.68rem', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em' }}>{tests.length} Tests</span>
         </div>
         <div style={{ overflowX: 'auto' }}>
@@ -731,20 +783,99 @@ const AdminDashboard = () => {
      LAYOUT
    ══════════════════════════════════════════════════ */
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif', padding: '24px', paddingTop: '104px', gap: '24px' }}>
-      <aside style={{ width: '270px', flexShrink: 0, background: 'white', borderRadius: '32px', padding: '32px 20px', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 30px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }}>
-        <div onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', marginBottom: '36px' }}>
+    <div className="admin-container" style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif', padding: '24px', paddingTop: '104px', gap: '24px', maxWidth: '100vw', overflowX: 'hidden' }}>
+      <style>{`
+        @media (max-width: 1024px) {
+          .admin-container { padding: 16px !important; padding-top: 104px !important; gap: 0 !important; }
+          .admin-header { 
+            position: fixed !important; 
+            top: 0; left: 0; right: 0; 
+            background: white !important; 
+            padding: 16px !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: space-between !important; 
+            z-index: 1000 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+          }
+          .admin-sidebar { 
+            position: fixed !important; 
+            top: 0; 
+            left: ${showMobileSidebar ? '0' : '-320px'}; 
+            bottom: 0; 
+            z-index: 2000; 
+            width: 280px !important; 
+            border-radius: 0 32px 32px 0 !important; 
+            transition: left 0.3s ease !important;
+            box-shadow: ${showMobileSidebar ? '20px 0 60px rgba(0,0,0,0.15)' : 'none'} !important;
+          }
+          .admin-main { width: 100% !important; padding-bottom: 80px !important; }
+          .admin-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.3); 
+            backdrop-filter: blur(4px); 
+            z-index: 1999; 
+            display: ${showMobileSidebar ? 'block' : 'none'};
+          }
+          .admin-hamburger { display: flex !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+          .admin-header-title h1 { fontSize: 1.2rem !important; margin: 0 !important; text-transform: capitalize !important; }
+          .admin-header-title p { display: none !important; }
+          .admin-stat-desktop-only { display: none !important; }
+          .admin-stat-mobile-only { display: grid !important; }
+          .admin-bottom-nav { display: flex !important; }
+          .admin-content-grid { display: block !important; }
+          .admin-main { height: auto !important; overflow: visible !important; }
+          .admin-log-table-desktop { display: none !important; }
+          .admin-log-list-mobile { display: block !important; }
+        }
+        @media (max-width: 480px) {
+          .admin-stat-grid { gridTemplateColumns: 1fr !important; }
+          .admin-stat-mobile-only { gridTemplateColumns: repeat(2, 1fr) !important; gap: 8px !important; }
+        }
+      `}</style>
+
+      {/* Mobile Overlay */}
+      <div className="admin-overlay" onClick={() => setShowMobileSidebar(false)} />
+
+      {/* Mobile Header */}
+      <div className="admin-header" style={{ display: 'none' }}>
+        <button
+          className="admin-hamburger"
+          onClick={() => setShowMobileSidebar(true)}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Menu size={26} color="#0f172a" />
+        </button>
+        <div className="admin-header-title" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', textAlign: 'center', width: 'auto' }}>
+          <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.1rem', color: '#0f172a', whiteSpace: 'nowrap' }}>
+            {activeTab === 'overview' ? 'Main Dashboard' : activeTab.replace('-', ' ')}
+          </h1>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', zIndex: 1100 }}>
+          <div style={{ position: 'relative' }}>
+            <Bell size={20} color="#64748b" />
+            <span style={{ position: 'absolute', top: '-2px', right: '-2px', width: '8px', height: '8px', background: '#ef4444', borderRadius: '50%', border: '2px solid white' }} />
+          </div>
+          <div style={{ width: '36px', height: '36px', background: '#6366f1', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900', fontSize: '0.8rem', fontFamily: 'Outfit, sans-serif' }}>
+            {user?.username ? (user.username.slice(0, 2).toUpperCase()) : 'RK'}
+          </div>
+        </div>
+      </div>
+
+      <aside className="admin-sidebar" style={{ width: '270px', flexShrink: 0, background: 'white', borderRadius: '32px', padding: '32px 20px', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 30px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }}>
+        <div onClick={() => { navigate('/'); setShowMobileSidebar(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', marginBottom: '36px' }}>
           <img src={logo} alt="Logo" style={{ height: '44px', width: 'auto' }} />
           <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.3rem', lineHeight: 1 }}>
             <span style={{ color: '#0f172a' }}>Future</span><span style={{ color: '#39B54A' }}>Minds</span>
           </span>
         </div>
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {sidebarBtn(activeTab === 'overview' && !editingTest, () => { closeEditor(); setActiveTab('overview'); }, <LayoutDashboard size={17} />, 'Overview')}
-          {sidebarBtn(activeTab === 'students' && !editingTest, () => { closeEditor(); setActiveTab('students'); }, <Users size={17} />, 'Students')}
-          {sidebarBtn(activeTab === 'results' && !editingTest, () => { closeEditor(); setActiveTab('results'); }, <BarChart2 size={17} />, 'Results')}
-          {sidebarBtn(activeTab === 'tests' || !!editingTest, () => { closeEditor(); setActiveTab('tests'); }, <FlaskConical size={17} />, 'Manage Tests')}
-          {sidebarBtn(activeTab === 'doubts' && !editingTest, () => { closeEditor(); setActiveTab('doubts'); }, <ClipboardCheck size={17} />, 'Doubts')}
+          {sidebarBtn(activeTab === 'overview' && !editingTest, () => { closeEditor(); setActiveTab('overview'); setShowMobileSidebar(false); }, <LayoutDashboard size={17} />, 'Overview')}
+          {sidebarBtn(activeTab === 'students' && !editingTest, () => { closeEditor(); setActiveTab('students'); setShowMobileSidebar(false); }, <Users size={17} />, 'Students')}
+          {sidebarBtn(activeTab === 'results' && !editingTest, () => { closeEditor(); setActiveTab('results'); setShowMobileSidebar(false); }, <BarChart2 size={17} />, 'Results')}
+          {sidebarBtn(activeTab === 'tests' || !!editingTest, () => { closeEditor(); setActiveTab('tests'); setShowMobileSidebar(false); }, <FlaskConical size={17} />, 'Manage Tests')}
+          {sidebarBtn(activeTab === 'doubts' && !editingTest, () => { closeEditor(); setActiveTab('doubts'); setShowMobileSidebar(false); }, <ClipboardCheck size={17} />, 'Doubts')}
         </nav>
         <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', marginTop: '16px', borderRadius: '14px', border: 'none', background: 'transparent', color: '#94a3b8', fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.18em', cursor: 'pointer', transition: 'all 0.2s', width: '100%' }}
           onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}
@@ -753,11 +884,12 @@ const AdminDashboard = () => {
         </button>
       </aside>
 
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
-        <div>
-          <p style={{ color: '#39B54A', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', fontSize: '0.68rem', marginBottom: '8px', fontStyle: 'italic' }}>Academic Director</p>
+      <main className="admin-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
+        {/* Desktop Title Bar */}
+        <div className="admin-header-title admin-stat-desktop-only">
+          <p style={{ color: '#39B54A', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.3em', fontSize: '0.68rem', marginBottom: '8px', fontStyle: 'italic' }}>Master Guide Dashboard</p>
           <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '2.6rem', color: '#0f172a', letterSpacing: '-0.02em', lineHeight: 1 }}>
-            {editingTest ? `✏️ ${editingTest.title}` : "Instructional Oversight Hub 🛡️"}
+            {editingTest ? `✏️ ${editingTest.title}` : "Teachers Magic Lab 🧪"}
           </h1>
         </div>
 
@@ -770,6 +902,29 @@ const AdminDashboard = () => {
           : renderTests()
         }
       </main>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="admin-bottom-nav" style={{ 
+        display: 'none', 
+        position: 'fixed', bottom: 0, left: 0, right: 0, 
+        background: 'white', padding: '12px 24px', 
+        justifyContent: 'space-between', alignItems: 'center', 
+        borderTop: '1px solid #f1f5f9', zIndex: 1000,
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.02)'
+      }}>
+        {[
+          { label: 'HOME', icon: <HomeIcon size={20} />, id: 'overview' },
+          { label: 'ALL', icon: <Search size={20} />, id: 'results' },
+          { label: 'MOCK', icon: <ClipboardCheck size={20} />, id: 'tests' },
+          { label: 'GRAND', icon: <Trophy size={20} />, id: 'tests_grand' },
+          { label: 'PROFILE', icon: <div style={{ width: '22px', height: '22px', background: '#6366f1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.6rem', fontWeight: '900' }}>RK</div>, id: 'students' }
+        ].map(item => (
+          <div key={item.label} onClick={() => { if(item.id === 'tests_grand') { setActiveTab('tests'); } else { setActiveTab(item.id); } }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: (activeTab === item.id || (item.id === 'tests_grand' && activeTab === 'tests')) ? '#6366f1' : '#94a3b8' }}>
+            {item.icon}
+            <span style={{ fontSize: '0.55rem', fontWeight: '900', letterSpacing: '0.05em' }}>{item.label}</span>
+          </div>
+        ))}
+      </nav>
     </div>
   );
 };

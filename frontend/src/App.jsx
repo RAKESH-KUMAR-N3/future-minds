@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import Tests from './pages/Tests';
 import Navbar from './components/Navbar';
+import BottomNav from './components/BottomNav';
 import TestRunner from './pages/TestRunner';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -38,6 +39,7 @@ function App() {
     <Router>
       <AuthProvider>
         <Navbar />
+        <BottomNav />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
