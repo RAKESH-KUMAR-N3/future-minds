@@ -108,7 +108,7 @@ const StudentDashboard = () => {
                 
                 <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <button style={sidebarItemStyle(activeTab === 'overview')} onClick={() => setActiveTab('overview')}><LayoutDashboard size={18} /> Learning Space</button>
-                    <button style={sidebarItemStyle(false)} onClick={() => navigate('/mock-tests')}><Target size={18} /> My Adventures</button>
+                    <button style={sidebarItemStyle(false)} onClick={() => navigate('/mock-tests')}><Target size={18} /> My Daily Tests</button>
                     <button style={sidebarItemStyle(activeTab === 'achievements')} onClick={() => setActiveTab('achievements')}><Award size={18} /> Trophy Room</button>
                     <button style={sidebarItemStyle(activeTab === 'doubts')} onClick={() => setActiveTab('doubts')}><Zap size={18} /> My Doubts</button>
                 </nav>
@@ -222,7 +222,7 @@ const StudentDashboard = () => {
                             <div style={{ background: `linear-gradient(135deg, ${color} 0%, #0f172a 100%)`, borderRadius: '36px', padding: '56px 48px', color: 'white', position: 'relative', overflow: 'hidden', minHeight: '280px', display: 'flex', alignItems: 'flex-end' }}>
                                 <div style={{ position: 'relative', zIndex: 1, maxWidth: '500px' }}>
                                     <h2 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '2.2rem', marginBottom: '12px', lineHeight: '1.1' }}>Your Math Quest<br />Awaits!</h2>
-                                    <button onClick={() => navigate('/mock-tests')} style={{ background: 'white', color: '#0f172a', border: 'none', borderRadius: '16px', padding: '14px 32px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>Resume Quest <Rocket size={20} /></button>
+                                    <button onClick={() => navigate('/mock-tests')} style={{ background: 'white', color: '#0f172a', border: 'none', borderRadius: '16px', padding: '14px 32px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>Resume Daily Test <Rocket size={20} /></button>
                                 </div>
                             </div>
                             <div>
@@ -243,7 +243,7 @@ const StudentDashboard = () => {
                             <div style={{ background: 'white', borderRadius: '28px', padding: '32px', border: '1px solid #f1f5f9', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
                                 <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.1rem', color: '#0f172a', textAlign: 'center', marginBottom: '20px' }}>Adventure Map</h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    {[{ title: 'Mock Challenges', icon: <ClipboardCheck size={20} />, color: '#39B54A', bg: '#f0fdf4', path: '/mock-tests' }, { title: 'Grand Adventures', icon: <Trophy size={20} />, color: '#f97316', bg: '#fff7ed', path: '/grand-tests', locked: true }].map((item, idx) => (
+                                    {[{ title: 'Daily Challenges', icon: <ClipboardCheck size={20} />, color: '#39B54A', bg: '#f0fdf4', path: '/mock-tests' }, { title: 'Grand Exam', icon: <Trophy size={20} />, color: '#f97316', bg: '#fff7ed', path: '/grand-tests', locked: true }].map((item, idx) => (
                                         <div key={idx} onClick={() => !item.locked && navigate(item.path)} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px', borderRadius: '16px', background: '#f8fafc', cursor: item.locked ? 'default' : 'pointer', opacity: item.locked ? 0.5 : 1 }}>
                                             <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.color }}>{item.icon}</div>
                                             <div><p style={{ fontWeight: '900', fontSize: '0.85rem' }}>{item.title}</p></div>

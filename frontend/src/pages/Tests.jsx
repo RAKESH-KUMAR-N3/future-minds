@@ -13,7 +13,7 @@ const Tests = () => {
     const isGrand = location.pathname.includes('grand');
     const isMock = location.pathname.includes('mock');
     const testType = isGrand ? 'grand' : isMock ? 'mock' : '';
-    const pageTitle = isGrand ? '🏆 Grand Adventure Tests' : isMock ? '📝 Weekly Mock Challenges' : '🎒 All Learning Adventures';
+    const pageTitle = isGrand ? '🏆 Grand Adventure Exam' : isMock ? '📝 Daily Test Challenges' : '🎒 All Exam Adventures';
 
     // Initialize empty — update when user loads (avoids undefined on refresh)
     const [selectedRole, setSelectedRole] = useState('');
@@ -132,7 +132,7 @@ const Tests = () => {
                                     onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.opacity = '0.9'; }}
                                     onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.opacity = '1'; }}
                                 >
-                                    <PlayCircle size={20} /> Start Test
+                                    <PlayCircle size={20} /> {isMock ? 'Start Test' : 'Start Exam'}
                                 </button>
                             </div>
                         ))}

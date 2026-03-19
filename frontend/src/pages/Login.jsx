@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import logo from '../assets/future-minds logo.png';
 import bgImage from '../assets/51482.jpg';
+import mobileBg from '../assets/future minds 15.jpg';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, user, loading: authLoading } = useAuth();
@@ -36,6 +38,7 @@ const Login = () => {
 
   return (
     <div
+      className="login-page-container"
       style={{
         minHeight: '100vh',
         width: '100%',
@@ -49,6 +52,55 @@ const Login = () => {
         fontFamily: "'Inter', sans-serif",
       }}
     >
+      <style>{`
+        @media (max-width: 768px) {
+          .login-page-container {
+            background-image: url(${mobileBg}) !important;
+          }
+          .login-card {
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            margin: 10px !important;
+            margin-top: 40px !important;
+            padding: 24px 16px !important;
+            border-radius: 0 !important;
+            position: relative !important;
+          }
+          .login-logo-img { 
+            display: flex !important; 
+            margin-bottom: 20px !important;
+          }
+          .login-logo-img img {
+            height: 88px !important;
+          }
+          .login-kite { display: block !important; top: -10px !important; right: 0px !important; }
+          .login-card h2 { font-size: 26px !important; margin-bottom: 8px !important; color: #1a202c !important; }
+          .login-card > p { font-size: 15px !important; margin-bottom: 30px !important; color: #4a5568 !important; }
+          .login-input-box {
+            background: white !important;
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 14px 24px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+          }
+          .login-input-box span.icon { display: none !important; }
+          .login-submit-btn { 
+            border-radius: 50px !important; 
+            font-size: 17px !important; 
+            padding: 16px !important;
+            background: #f97316 !important; /* Orange color */
+            margin-top: 10px !important;
+          }
+          .login-footer { font-size: 14px !important; color: #4a5568 !important; }
+          .login-footer button { color: #f97316 !important; }
+          /* hide global navbar on login page mobile */
+          nav.navbar-main, header { display: none !important; }
+        }
+        .login-kite { display: none; }
+      `}</style>
       {/* Back / Logo button */}
       <button
         onClick={() => navigate('/')}
@@ -77,6 +129,7 @@ const Login = () => {
 
       {/* Floating Login Card */}
       <div
+        className="login-card"
         style={{
           background: 'rgba(255,255,255,0.82)',
           backdropFilter: 'blur(18px)',
@@ -91,12 +144,15 @@ const Login = () => {
           marginTop: '100px',
         }}
       >
+        {/* Kite decoration - mobile only */}
+        <span className="login-kite" style={{ position: 'absolute', top: '14px', right: '18px', fontSize: '28px', lineHeight: 1 }}>🪁</span>
         {/* Logo */}
         <div
+          className="login-logo-img"
           style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px', cursor: 'pointer' }}
           onClick={() => navigate('/')}
         >
-          <img src={logo} alt="FutureMinds Logo" style={{ height: '64px', width: 'auto' }} />
+          <img src={logo} alt="FutureMinds Logo" style={{ height: '80px', width: 'auto' }} />
         </div>
 
         {/* Heading */}
@@ -119,17 +175,18 @@ const Login = () => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Username */}
           <div
+            className="login-input-box"
             style={{
               background: 'rgba(255,255,255,0.9)',
-              borderRadius: '14px',
-              padding: '14px 18px',
+              borderRadius: '50px',
+              padding: '14px 22px',
               border: '1.5px solid #e2e8f0',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
             }}
           >
-            <span style={{ fontSize: '18px' }}>👤</span>
+            <span className="icon" style={{ fontSize: '18px' }}>👤</span>
             <input
               type="text"
               placeholder="Username"
@@ -140,7 +197,7 @@ const Login = () => {
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
-                fontSize: '15px',
+                fontSize: '16px',
                 fontWeight: 600,
                 color: '#2d3748',
                 width: '100%',
@@ -150,19 +207,20 @@ const Login = () => {
 
           {/* Password */}
           <div
+            className="login-input-box"
             style={{
               background: 'rgba(255,255,255,0.9)',
-              borderRadius: '14px',
-              padding: '14px 18px',
+              borderRadius: '50px',
+              padding: '14px 22px',
               border: '1.5px solid #e2e8f0',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
             }}
           >
-            <span style={{ fontSize: '18px' }}>🔒</span>
+            <span className="icon" style={{ fontSize: '18px' }}>🔒</span>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -171,12 +229,27 @@ const Login = () => {
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
-                fontSize: '15px',
+                fontSize: '16px',
                 fontWeight: 600,
                 color: '#2d3748',
                 width: '100%',
               }}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                border: 'none',
+                background: 'none',
+                color: '#718096',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                padding: '0 4px',
+              }}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
           </div>
 
           {/* Error */}
@@ -198,10 +271,11 @@ const Login = () => {
 
           {/* Submit Button */}
           <button
+            className="login-submit-btn"
             type="submit"
             disabled={loading}
             style={{
-              background: loading ? '#a0aec0' : '#0ea5e9',
+              background: loading ? '#a0aec0' : '#f97316',
               color: '#fff',
               fontWeight: 800,
               fontSize: '16px',
@@ -215,7 +289,7 @@ const Login = () => {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              boxShadow: '0 4px 14px rgba(14,165,233,0.35)',
+              boxShadow: '0 4px 14px rgba(249,115,22,0.35)',
               transition: 'all 0.2s',
               marginTop: '4px',
             }}
@@ -225,14 +299,14 @@ const Login = () => {
         </form>
 
         {/* Footer */}
-        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#718096', fontWeight: 600 }}>
+        <p className="login-footer" style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#718096', fontWeight: 600 }}>
           Forgot Password?{' '}
           <button
             onClick={() => alert('Contact your teacher for your magic pass!')}
             style={{
               background: 'none',
               border: 'none',
-              color: '#0ea5e9',
+              color: '#f97316',
               fontWeight: 700,
               cursor: 'pointer',
               fontSize: '13px',
