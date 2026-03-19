@@ -37,7 +37,12 @@ const Navbar = () => {
                     <img src={logo} alt="Logo" style={{ height: '52px', width: 'auto', objectFit: 'contain' }} />
                     <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '900', fontSize: '1.6rem', letterSpacing: '-0.01em', lineHeight: '1' }}>
                         <span style={{ color: '#0f172a' }}>Future</span>
-                        <span style={{ color: '#39B54A' }}>Minds</span>
+                        <span style={{ 
+                            background: 'linear-gradient(to right, #39B54A, #F58220)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            display: 'inline-block'
+                        }}>Minds</span>
                     </span>
                 </div>
 

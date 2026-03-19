@@ -110,6 +110,7 @@ const seedData = async () => {
       ]
     };
 
+    const testCount = await Test.countDocuments();
     if (testCount === 0) {
       // No tests at all — create from scratch
       await Test.create([
